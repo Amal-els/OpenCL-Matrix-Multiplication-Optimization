@@ -45,14 +45,14 @@ __kernel void mmul(const int M, const int N, const int K,
  
         // Load one tile of A and B into local memory
         for (int la=0; la<LPTA/WIDTH; la++) {
-            int tid = tidn*RTSM + tidm;
-            int id = la*RTSN*RTSM + tid;
+            int tid = tidn*RTSM + tidm; //flattened w khw     
+            int id = la*RTSN*RTSM + tid; // l'indice mt3 l case (noumrou la) fi wst tile li bch yloadeha l WI fl iteration hedhi   id = global linear index of a tile element assigned to (thread + load iteration)
             int row = id % (TSM/WIDTH);
             int col = id / (TSM/WIDTH);
  
             // Load the values (wide vector load)
             int tiledIndex = TSK*t + col;
-            floatX vecA = A[tiledIndex*(M/WIDTH) + offsetM/WIDTH + row];
+            floatX vecA = A[tiledIndex*(M/WIDTH) + offsetM/WIDTH + row]; //enti fi ana tile 3al direction de M(tiledIndex) + fi ana row fi wst tile (kobr l A M/WIDTH bl WIDTH packing)
             floatX vecB = B[tiledIndex*(N/WIDTH) + offsetN/WIDTH + row];
  
             // Store the loaded vectors into local memory
@@ -97,6 +97,7 @@ __kernel void mmul(const int M, const int N, const int K,
                 int row = tidm + wm*RTSM;
                 Areg = Asub[k][row];
                 for (int wn=0; wn<WPTN; wn++) {
+                    
                     acc[wm][wn] += Areg * Breg[wn];
                 }
             }

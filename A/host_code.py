@@ -13,7 +13,7 @@ def read_int(prompt, fallback=None):
 
 
 # Number of matrix multiplication to perform
-COUNT = 1
+COUNT = 20
 
 # Matrix dimensions
 DEFAULT_DIM = 8192
