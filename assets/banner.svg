@@ -1,0 +1,119 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" font-family="'Courier New', monospace">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f"/>
+      <stop offset="100%" style="stop-color:#0d1117"/>
+    </linearGradient>
+    <linearGradient id="barGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a3a5c"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.9"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a3a5c"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.75"/>
+    </linearGradient>
+    <linearGradient id="barGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a3a5c"/>
+      <stop offset="100%" style="stop-color:#00bfff;stop-opacity:0.6"/>
+    </linearGradient>
+    <linearGradient id="barGrad4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0a1a2e"/>
+      <stop offset="100%" style="stop-color:#004a6e;stop-opacity:0.5"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4ff"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.15" stroke-opacity="0.06"/>
+    </pattern>
+    <radialGradient id="centerGlow" cx="30%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.04"/>
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="400" fill="url(#bg)"/>
+  <rect width="1200" height="400" fill="url(#grid)"/>
+  <rect width="1200" height="400" fill="url(#centerGlow)"/>
+
+  <!-- Decorative corner brackets -->
+  <path d="M 20 20 L 20 50 M 20 20 L 50 20" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" fill="none"/>
+  <path d="M 1180 20 L 1180 50 M 1180 20 L 1150 20" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" fill="none"/>
+  <path d="M 20 380 L 20 350 M 20 380 L 50 380" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" fill="none"/>
+  <path d="M 1180 380 L 1180 350 M 1180 380 L 1150 380" stroke="#00d4ff" stroke-width="1.5" stroke-opacity="0.5" fill="none"/>
+
+  <!-- Left panel: Title + subtitle -->
+  <text x="60" y="95" font-family="'Courier New', monospace" font-size="11" fill="#00d4ff" fill-opacity="0.7" letter-spacing="3">// INSAT GL3 · CO-DESIGN LAB 1</text>
+  
+  <text x="58" y="155" font-family="Georgia, serif" font-size="42" font-weight="bold" fill="#ffffff" filter="url(#softglow)" letter-spacing="-1">OpenCL Matrix</text>
+  <text x="58" y="205" font-family="Georgia, serif" font-size="42" font-weight="bold" fill="#00d4ff" filter="url(#softglow)" letter-spacing="-1">Multiplication</text>
+  <text x="58" y="245" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="#ffffff" letter-spacing="-1">Optimisation</text>
+
+  <line x1="58" y1="268" x2="400" y2="268" stroke="url(#accentLine)" stroke-width="1.5"/>
+
+  <text x="60" y="295" font-family="'Courier New', monospace" font-size="13" fill="#8899aa" letter-spacing="1">NVIDIA GeForce RTX 3050 6GB Laptop · PyOpenCL</text>
+  <text x="60" y="318" font-family="'Courier New', monospace" font-size="13" fill="#8899aa" letter-spacing="1">Tiling · Vectorisation · Register Blocking · Multi-Device</text>
+
+  <!-- Big speedup badge -->
+  <rect x="60" y="335" width="180" height="44" rx="4" fill="#00d4ff" fill-opacity="0.08" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="150" y="352" font-family="'Courier New', monospace" font-size="11" fill="#00d4ff" fill-opacity="0.8" text-anchor="middle" letter-spacing="2">PEAK SPEEDUP</text>
+  <text x="150" y="372" font-family="Georgia, serif" font-size="20" font-weight="bold" fill="#00d4ff" text-anchor="middle" filter="url(#glow)">7.19×  |  4180 GFLOPS</text>
+
+  <!-- Divider -->
+  <line x1="460" y1="30" x2="460" y2="370" stroke="#00d4ff" stroke-width="0.5" stroke-opacity="0.2"/>
+
+  <!-- Right panel: Performance chart -->
+  <text x="510" y="60" font-family="'Courier New', monospace" font-size="11" fill="#00d4ff" fill-opacity="0.6" letter-spacing="3">PART A — PERFORMANCE EVOLUTION (GFLOPS)</text>
+
+  <!-- Chart area -->
+  <!-- Max bar width = 580 (maps to 4180 GFLOPS) -->
+  <!-- Scale: px_per_gflop = 580/4180 ≈ 0.1388 -->
+
+  <!-- kernel_1: 581 GFLOPS → 581*0.1388 ≈ 80.6 px -->
+  <text x="510" y="118" font-family="'Courier New', monospace" font-size="10" fill="#6677aa" letter-spacing="1">kernel_1  Coalesced baseline</text>
+  <rect x="510" y="122" width="80" height="28" rx="2" fill="url(#barGrad4)"/>
+  <rect x="510" y="122" width="80" height="28" rx="2" fill="none" stroke="#00bfff" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="598" y="141" font-family="'Courier New', monospace" font-size="12" fill="#8899aa" font-weight="bold"> 581 GFLOPS  · 1.00×</text>
+
+  <!-- kernel_4: 978 GFLOPS → 978*0.1388 ≈ 135.7 px -->
+  <text x="510" y="178" font-family="'Courier New', monospace" font-size="10" fill="#6677aa" letter-spacing="1">kernel_4  Tiling + float4</text>
+  <rect x="510" y="182" width="136" height="28" rx="2" fill="url(#barGrad3)"/>
+  <rect x="510" y="182" width="136" height="28" rx="2" fill="none" stroke="#00bfff" stroke-width="0.5" stroke-opacity="0.4"/>
+  <text x="654" y="201" font-family="'Courier New', monospace" font-size="12" fill="#aabbcc" font-weight="bold"> 978 GFLOPS  · 1.68×</text>
+
+  <!-- kernel_6: 3658 GFLOPS → 3658*0.1388 ≈ 507.7 px -->
+  <text x="510" y="238" font-family="'Courier New', monospace" font-size="10" fill="#6677aa" letter-spacing="1">kernel_6  2D Register Blocking</text>
+  <rect x="510" y="242" width="508" height="28" rx="2" fill="url(#barGrad2)"/>
+  <rect x="510" y="242" width="508" height="28" rx="2" fill="none" stroke="#00d4ff" stroke-width="0.5" stroke-opacity="0.5"/>
+  <text x="1026" y="261" font-family="'Courier New', monospace" font-size="12" fill="#ccddee" font-weight="bold"> 3658 · 6.29×</text>
+
+  <!-- kernel_7: 4180 GFLOPS → full 580 px -->
+  <text x="510" y="298" font-family="'Courier New', monospace" font-size="10" fill="#00d4ff" fill-opacity="0.8" letter-spacing="1">kernel_7  All Optimisations Combined</text>
+  <rect x="510" y="302" width="580" height="30" rx="2" fill="url(#barGrad1)" filter="url(#glow)"/>
+  <rect x="510" y="302" width="580" height="30" rx="2" fill="none" stroke="#00d4ff" stroke-width="1" stroke-opacity="0.8"/>
+  <text x="518" y="323" font-family="'Courier New', monospace" font-size="13" fill="#ffffff" font-weight="bold" filter="url(#glow)">4180 GFLOPS  ·  7.19×  🏆</text>
+
+  <!-- Axis line -->
+  <line x1="510" y1="345" x2="1095" y2="345" stroke="#00d4ff" stroke-width="0.5" stroke-opacity="0.2"/>
+
+  <!-- Part B badge -->
+  <rect x="510" y="355" width="390" height="26" rx="3" fill="#00d4ff" fill-opacity="0.05" stroke="#00d4ff" stroke-width="0.5" stroke-opacity="0.3"/>
+  <text x="515" y="373" font-family="'Courier New', monospace" font-size="11" fill="#00d4ff" fill-opacity="0.7" letter-spacing="1">PART B  GPU + iGPU combined →  225 GFLOPS  (1.87× vs GPU-only)</text>
+</svg>
