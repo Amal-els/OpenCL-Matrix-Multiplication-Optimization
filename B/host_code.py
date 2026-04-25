@@ -34,35 +34,35 @@ CVAL = float(K) * AVAL * BVAL
 
 # --- Device selection ---
 use_gpu = read_int("Use GPU? (yes: 1, no: 0, default: 1): ", 1) != 0
-use_cpu = read_int("Use CPU? (yes: 1, no: 0, default: 1): ", 1) != 0
+use_integrated_gpu = read_int("Use integrated_gpu? (yes: 1, no: 0, default: 1): ", 1) != 0
 
-if not use_gpu and not use_cpu:
-    print("At least one of GPU or CPU must be enabled. Defaulting to GPU only.")
+if not use_gpu and not use_integrated_gpu:
+    print("At least one of GPU or integrated_gpu must be enabled. Defaulting to GPU only.")
     use_gpu = True
 
-# Partition rows between GPU and CPU
-if use_gpu and use_cpu:
+# Partition rows between GPU and integrated_gpu
+if use_gpu and use_integrated_gpu:
     GPU_M = 15 * M // 16
-    CPU_M = M // 16
+    integrated_gpu_M = M // 16
 elif use_gpu:
     print("The GPU is going to perform all the work.")
     GPU_M = M
-    CPU_M = 0
+    integrated_gpu_M = 0
 else:
-    print("The CPU is going to perform all the work.")
+    print("The integrated_gpu is going to perform all the work.")
     GPU_M = 0
-    CPU_M = M
+    integrated_gpu_M = M
 
 # Buffer sizes
 sizeB = K * N
 sizeAGPU = GPU_M * K
-sizeACPU = CPU_M * K
+sizeAintegrated_gpu = integrated_gpu_M * K
 sizeCGPU = GPU_M * N
-sizeCCPU = CPU_M * N
+sizeCintegrated_gpu = integrated_gpu_M * N
 
 # --- Kernel configuration ---
 gpu_kernel_name = "./B/gpu_kernel.cl"
-cpu_kernel_name = "./B/cpu_kernel.cl"
+integrated_gpu_kernel_name = "./B/integrated_gpu_kernel.cl"
 
 DEFAULT_TS = 16
 TS = DEFAULT_TS
@@ -89,8 +89,8 @@ TSK = DEFAULT_TSK
 WPTM = DEFAULT_WPTM
 WPTN = DEFAULT_WPTN
 
-if use_cpu:
-    print("\nCPU kernel:", cpu_kernel_name)
+if use_integrated_gpu:
+    print("\nintegrated_gpu kernel:", integrated_gpu_kernel_name)
     WIDTH = read_int("Work per thread (1, 2, 4) (default: 4): ", DEFAULT_WIDTH)
     if WIDTH not in [1, 2, 4]:
         print(f"Invalid width. Using default: {DEFAULT_WIDTH}")
@@ -103,18 +103,18 @@ if use_cpu:
 
 # --- Host buffers ---
 gpu_h_B = numpy.full(sizeB, BVAL, dtype=numpy.float32)
-cpu_h_B = numpy.full(sizeB, BVAL, dtype=numpy.float32)
+integrated_gpu_h_B = numpy.full(sizeB, BVAL, dtype=numpy.float32)
 
 gpu_h_A = gpu_h_C = None
-cpu_h_A = cpu_h_C = None
+integrated_gpu_h_A = integrated_gpu_h_C = None
 
 if use_gpu:
     gpu_h_A = numpy.full(sizeAGPU, AVAL, dtype=numpy.float32)
     gpu_h_C = numpy.empty(sizeCGPU, dtype=numpy.float32)
 
-if use_cpu:
-    cpu_h_A = numpy.full(sizeACPU, AVAL, dtype=numpy.float32)
-    cpu_h_C = numpy.empty(sizeCCPU, dtype=numpy.float32)
+if use_integrated_gpu:
+    integrated_gpu_h_A = numpy.full(sizeAintegrated_gpu, AVAL, dtype=numpy.float32)
+    integrated_gpu_h_C = numpy.empty(sizeCintegrated_gpu, dtype=numpy.float32)
 
 # --- GPU OpenCL setup ---
 gpu_context = gpu_queue = gpu_mmul = None
@@ -132,28 +132,28 @@ if gpu_h_A is not None and gpu_h_C is not None:
     gpu_mmul = gpu_program.mmul
     gpu_mmul.set_scalar_arg_dtypes([numpy.int32, numpy.int32, numpy.int32, None, None, None])
 
-# --- CPU OpenCL setup ---
-cpu_context = cpu_queue = cpu_mmul = None
-cpu_a = cpu_b = cpu_c = None
+# --- integrated_gpu OpenCL setup ---
+integrated_gpu_context = integrated_gpu_queue = integrated_gpu_mmul = None
+integrated_gpu_a = integrated_gpu_b = integrated_gpu_c = None
 
-if cpu_h_A is not None and cpu_h_C is not None:
-    print("\nCreating a CPU OpenCL context...")
-    cpu_kernel_source = f"""
+if integrated_gpu_h_A is not None and integrated_gpu_h_C is not None:
+    print("\nCreating a integrated_gpu OpenCL context...")
+    integrated_gpu_kernel_source = f"""
 #define WIDTH {WIDTH}
 #define TSM {TSM}
 #define TSN {TSN}
 #define TSK {TSK}
 #define WPTM {WPTM}
 #define WPTN {WPTN}
-""" + open(cpu_kernel_name).read()
-    cpu_context = cl.create_some_context()
-    cpu_queue = cl.CommandQueue(cpu_context)
-    cpu_a = cl.Buffer(cpu_context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=cpu_h_A)
-    cpu_b = cl.Buffer(cpu_context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=cpu_h_B)
-    cpu_c = cl.Buffer(cpu_context, cl.mem_flags.WRITE_ONLY, size=cpu_h_C.nbytes)
-    cpu_program = cl.Program(cpu_context, cpu_kernel_source).build()
-    cpu_mmul = cpu_program.mmul
-    cpu_mmul.set_scalar_arg_dtypes([numpy.int32, numpy.int32, numpy.int32, None, None, None])
+""" + open(integrated_gpu_kernel_name).read()
+    integrated_gpu_context = cl.create_some_context()
+    integrated_gpu_queue = cl.CommandQueue(integrated_gpu_context)
+    integrated_gpu_a = cl.Buffer(integrated_gpu_context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=integrated_gpu_h_A)
+    integrated_gpu_b = cl.Buffer(integrated_gpu_context, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=integrated_gpu_h_B)
+    integrated_gpu_c = cl.Buffer(integrated_gpu_context, cl.mem_flags.WRITE_ONLY, size=integrated_gpu_h_C.nbytes)
+    integrated_gpu_program = cl.Program(integrated_gpu_context, integrated_gpu_kernel_source).build()
+    integrated_gpu_mmul = integrated_gpu_program.mmul
+    integrated_gpu_mmul.set_scalar_arg_dtypes([numpy.int32, numpy.int32, numpy.int32, None, None, None])
 
 # --- Run multiplications ---
 print(f"\nStarting {COUNT} OpenCL Matrix Multiplication(s)...")
@@ -174,28 +174,28 @@ for i in range(COUNT):
                 gpu_c,
             )
 
-        if cpu_mmul is not None and cpu_queue is not None:
-            cpu_mmul(
-                cpu_queue,
-                (CPU_M // WPTM, N // WPTN),
+        if integrated_gpu_mmul is not None and integrated_gpu_queue is not None:
+            integrated_gpu_mmul(
+                integrated_gpu_queue,
+                (integrated_gpu_M // WPTM, N // WPTN),
                 (TSM // WPTM, TSN // WPTN),
-                numpy.int32(CPU_M),
+                numpy.int32(integrated_gpu_M),
                 numpy.int32(N),
                 numpy.int32(K),
-                cpu_a,
-                cpu_b,
-                cpu_c,
+                integrated_gpu_a,
+                integrated_gpu_b,
+                integrated_gpu_c,
             )
 
         if gpu_queue is not None:
             gpu_queue.flush()
-        if cpu_queue is not None:
-            cpu_queue.flush()
+        if integrated_gpu_queue is not None:
+            integrated_gpu_queue.flush()
 
         if gpu_queue is not None:
             gpu_queue.finish()
-        if cpu_queue is not None:
-            cpu_queue.finish()
+        if integrated_gpu_queue is not None:
+            integrated_gpu_queue.finish()
     except cl.Error as e:
         print(f"OpenCL error: {e}")
 
@@ -207,10 +207,10 @@ print(f"{run_time:.4f} seconds at {gflop / run_time:.2f} GFLOPS")
 if gpu_queue is not None and gpu_h_C is not None and gpu_c is not None:
     cl.enqueue_copy(gpu_queue, gpu_h_C, gpu_c)
 
-if cpu_queue is not None and cpu_h_C is not None and cpu_c is not None:
-    cl.enqueue_copy(cpu_queue, cpu_h_C, cpu_c)
+if integrated_gpu_queue is not None and integrated_gpu_h_C is not None and integrated_gpu_c is not None:
+    cl.enqueue_copy(integrated_gpu_queue, integrated_gpu_h_C, integrated_gpu_c)
 
-parts = [arr for arr in (gpu_h_C, cpu_h_C) if arr is not None]
+parts = [arr for arr in (gpu_h_C, integrated_gpu_h_C) if arr is not None]
 h_C = numpy.concatenate(parts)
 sizeC = h_C.size
 
